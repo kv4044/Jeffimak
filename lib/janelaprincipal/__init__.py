@@ -1,6 +1,7 @@
 import tkinter as tk
 from lib.janelamotores import janela_motores
 from lib.janelacadastro import janela_cadastrar
+from lib.janelaediçao import janela_edicao
 
 arquivo = 'Motores.txt'
 
@@ -37,13 +38,22 @@ botao2 = tk.Button(text='Motores cadastrados',
                    height=2)
 botao2.place(x=300, y=150)
 
+# Botão que leva para janela de ediçao dos motores cadastrados
+botao3 = tk.Button(text='Editar',
+                   bg='lightgreen',
+                   command=lambda: janela_edicao(janela),
+                   font=('helvica', 12, 'bold'),
+                   width=16,
+                   height=2)
+botao3.place(x=560, y=150)
+
 # Botão de sair
-botao3 = tk.Button(text='Sair',
+botao4 = tk.Button(text='Sair',
                    bg='lightgreen',
                    command=sair,
                    font=('helvica', 12, 'bold'),
                    width=16,
                    height=2)
-botao3.place(x=560, y=150)
+botao4.place(x=300, y=430)
 
 janela.mainloop()

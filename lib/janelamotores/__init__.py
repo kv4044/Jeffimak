@@ -7,8 +7,12 @@ filepath = 'Motores.txt'
 def janela_motores(janela_principal):
     janela_principal.withdraw()
 
+    def enter(event=None):
+        # Botao enter do teclado
+        Buscar()
+
     def Buscar():
-        #
+        # Limpar o conteúdo do widget de texto
         texto_motores.delete("1.0", tk.END)
 
         # Obter a palavra do entrada_busca
@@ -23,13 +27,21 @@ def janela_motores(janela_principal):
             with open("Motores.txt", "r") as file:
                 linhas = file.readlines()
 
-            # Procurar a palavra nas linhas do arquivo
-            results = [linha for linha in linhas if palavra in linha]
+            results = []
+            for i, linha in enumerate(linhas):
+                if palavra in linha:
+                    # Adiciona a linha onde a palavra foi encontrada
+                    results.append(linha.strip())
+
+                    # Adiciona as próximas 6 linhas se existirem
+                    for j in range(i + 1, i + 7):
+                        if j < len(linhas):
+                            results.append(linhas[j].strip())
 
             # Mostrar os resultados no texto_motores
             if results:
                 for result in results:
-                    texto_motores.insert(tk.END, result)
+                    texto_motores.insert(tk.END, result + "\n")
             else:
                 texto_motores.insert(tk.END, "Nenhuma ocorrência encontrada.")
 
@@ -39,7 +51,7 @@ def janela_motores(janela_principal):
     def mostrar_tudo():
         # opçao de mostrar todos os motores cadastrados
         try:
-            with open(filepath, 'r')as arquivo:
+            with open(filepath, 'r') as arquivo:
                 conteudo = arquivo.read()
                 texto_motores.delete('1.0', tk.END)
                 texto_motores.insert(tk.END, conteudo)
@@ -48,7 +60,7 @@ def janela_motores(janela_principal):
 
     # Montagem da janela de lista dos motores
     motores = tk.Toplevel()
-    motores.geometry('750x500')
+    motores.geometry('1280x720')
     motores.configure(bg='grey')
     motores.title('MOTORES')
 
@@ -57,18 +69,32 @@ def janela_motores(janela_principal):
     titulo.pack(side=tk.TOP, fill=tk.X, ipady=20)
 
     # Buscar motor pelo nome ou potencia
-    botao_buscar= tk.Button(motores, text='Buscar', font=('helvica', 12), command=Buscar)
+    botao_buscar = tk.Button(motores, text='Buscar', font=('helvica', 12), command=Buscar)
     botao_buscar.place(x=240, y=105)
     entrada_busca = tk.Entry(motores, font=('helvica', 12))
     entrada_busca.place(x=40, y=110)
+    # busca pelo enter
+    motores.bind('<Return>', enter)
 
     # Ver todos os motores cadastrados
     botao_ver = tk.Button(motores, text='Ver todos', command=mostrar_tudo, font=('helvica', 12), width=13, height=1)
-    botao_ver.place(x=590, y=110)
+    botao_ver.place(x=1177, y=110)
 
     # motores cadastrados
-    texto_motores = tk.Text(motores, state=tk.NORMAL, wrap=tk.WORD, font=("helvica", 12), height=15, width=75)
+    texto_motores = tk.Text(motores, state=tk.NORMAL, wrap=tk.WORD, font=("helvica", 12), height=25, width=140)
     texto_motores.place(x=40, y=150)
+
+    # Função para alternar entre tela cheia e janela normal
+    def alternar_tela_cheia(event=None):
+        estado_atual = motores.attributes('-fullscreen')
+        motores.attributes('-fullscreen', not estado_atual)
+
+    # Configuração da tecla para alternar entre tela cheia e janela normal (opcional)
+    motores.bind("<F11>", alternar_tela_cheia)
+    motores.bind("<Escape>", alternar_tela_cheia)
+
+    # Abrir a janela em tela cheia
+    motores.attributes('-fullscreen', True)
 
     # Fecha a janela de cadastro e volta para a principal
     botao_sair = tk.Button(motores,
@@ -78,7 +104,7 @@ def janela_motores(janela_principal):
                            font=('helvica', 12, 'bold'),
                            width=13,
                            height=1)
-    botao_sair.place(x=590, y=440)
+    botao_sair.place(x=1170, y=640)
 
     motores.mainloop()
 
