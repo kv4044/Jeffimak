@@ -2,6 +2,7 @@ import tkinter as tk
 from lib.janelamotores import janela_motores
 from lib.janelacadastro import janela_cadastrar
 from lib.janelaediçao import janela_edicao
+from lib.janelaordemservico import *
 
 arquivo = 'Motores.txt'
 
@@ -47,13 +48,22 @@ botao3 = tk.Button(text='Editar',
                    height=2)
 botao3.place(x=560, y=150)
 
+# Botão de gerar ordem de serviço
+botao4 = tk.Button(text='Ordem de serviço',
+                   bg='lightgreen',
+                   command=lambda: janela_ordem(janela),
+                   font=('helvica', 12, 'bold'),
+                   width=16,
+                   height=2)
+botao4.place(x=300, y=250)
+
 # Botão de sair
-botao4 = tk.Button(text='Sair',
+botao5 = tk.Button(text='Sair',
                    bg='lightgreen',
                    command=sair,
                    font=('helvica', 12, 'bold'),
                    width=16,
                    height=2)
-botao4.place(x=300, y=430)
+botao5.place(x=300, y=430)
 
 janela.mainloop()

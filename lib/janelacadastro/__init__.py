@@ -4,7 +4,7 @@ from tkinter import messagebox
 
 
 filepath = 'Motores.txt'
-counter_path = 'contador.txt'
+counter_path = 'contador_motor.txt'
 
 
 def ler_contador():

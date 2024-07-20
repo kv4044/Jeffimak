@@ -48,7 +48,7 @@ def janela_edicao(janela_principal):
         estado_atual = edicao.attributes('-fullscreen')
         edicao.attributes('-fullscreen', not estado_atual)
 
-    # Configuração da tecla para alternar entre tela cheia e janela normal (opcional)
+    # Configuração da tecla para alternar entre tela cheia e janela normal
     edicao.bind("<F11>", alternar_tela_cheia)
     edicao.bind("<Escape>", alternar_tela_cheia)
 
