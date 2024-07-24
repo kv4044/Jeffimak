@@ -65,7 +65,7 @@ def janela_motores(janela_principal):
     motores.title('MOTORES')
 
     # Um titulo dentro da janela
-    titulo = tk.Label(motores, text="VER MOTORES CADASTRADOS", bg="#fff01a", font=('helvica', 14, 'bold'))
+    titulo = tk.Label(motores, text="MOTORES CADASTRADOS", bg="#fff01a", font=('helvica', 14, 'bold'))
     titulo.pack(side=tk.TOP, fill=tk.X, ipady=20)
 
     # Buscar motor pelo nome ou potencia

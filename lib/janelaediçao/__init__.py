@@ -29,7 +29,7 @@ def janela_edicao(janela_principal):
     edicao.title('MOTORES')
 
     # Um titulo dentro da janela
-    titulo = tk.Label(edicao, text="EDIÇÃO DA LSITA DE MOTORES", bg="#00ff1e", font=('helvica', 14, 'bold'))
+    titulo = tk.Label(edicao, text="EDIÇÃO", bg="#00ff1e", font=('helvica', 14, 'bold'))
     titulo.pack(side=tk.TOP, fill=tk.X, ipady=20)
 
     text_editar = tk.Text(edicao, wrap=tk.WORD, font=("helvica", 12), height=25, width=140)

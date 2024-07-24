@@ -161,16 +161,16 @@ def janela_ordem(janela_principal):
     # Labels e Entradas
     tk.Label(ordem, text=f'Ordens geradas: {contador - 1}', font=('Helvetica', 12), bg='grey').place(x=40, y=150)
 
-    tk.Label(ordem, text='Qual equipamento:', font=('Helvetica', 12), bg='grey').place(x=40, y=180)
+    tk.Label(ordem, text='Equipamento:', font=('Helvetica', 12), bg='grey').place(x=40, y=180)
     tk.Entry(ordem, textvariable=nome_equipamento, font=('Helvetica', 12)).place(x=40, y=200)
 
-    tk.Label(ordem, text='Qual o problema:', font=('Helvetica', 12), bg='grey').place(x=40, y=270)
+    tk.Label(ordem, text='Problema:', font=('Helvetica', 12), bg='grey').place(x=40, y=270)
     tk.Entry(ordem, textvariable=nome_problema, font=('Helvetica', 12)).place(x=40, y=290)
 
-    tk.Label(ordem, text='Qual a solução:', font=('Helvetica', 12), bg='grey').place(x=40, y=350)
+    tk.Label(ordem, text='Solução:', font=('Helvetica', 12), bg='grey').place(x=40, y=350)
     tk.Entry(ordem, textvariable=nome_solucao, font=('Helvetica', 12)).place(x=40, y=370)
 
-    tk.Label(ordem, text='Qual a causa:', font=('Helvetica', 12), bg='grey').place(x=40, y=430)
+    tk.Label(ordem, text='Causa:', font=('Helvetica', 12), bg='grey').place(x=40, y=430)
     tk.Entry(ordem, textvariable=nome_causa, font=('Helvetica', 12)).place(x=40, y=450)
 
     tk.Label(ordem, text='Requisitante:', font=('Helvetica', 12), bg='grey').place(x=310, y=270)
