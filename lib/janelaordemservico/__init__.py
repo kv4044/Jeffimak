@@ -1,16 +1,18 @@
 import tkinter as tk
+from tkinter import messagebox
 from datetime import datetime
 import os
 
 data = datetime.now()
-data_atual = data.strftime("%d/%m/%Y")
+data_atual = data.strftime("%d/%m/%Y %H:%M")
 
 # Nome do arquivo que armazena o contador
 arquivo_contador = 'contador_os.txt'
+arquivo_informacoes = 'Motores.txt'
 
 
 def carregar_contador():
-    """Função para carregar o valor do contador do arquivo"""
+    # Função para carregar o valor do contador do arquivo
     if os.path.exists(arquivo_contador):
         with open(arquivo_contador, 'r') as f:
             return int(f.read().strip())
@@ -19,9 +21,33 @@ def carregar_contador():
 
 
 def salvar_contador(valor):
-    """Função para salvar o valor do contador no arquivo"""
+    # Função para salvar o valor do contador no arquivo
     with open(arquivo_contador, 'w') as f:
         f.write(str(valor))
+
+
+def ler_informacoes(equipamento):
+    # Função para ler as informações do arquivo informacoes.txt e retornar as informações do equipamento específico
+    if os.path.exists(arquivo_informacoes):
+        with open(arquivo_informacoes, 'r') as f:
+            lines = f.readlines()
+
+        # Extrair as informações do equipamento específico
+        equipamento_info = []
+        capture = False
+        for line in lines:
+            line = line.strip()
+            if line == equipamento:
+                capture = True
+            elif capture and line == ("-----------------------------------------------------------------"
+                                      "----------------------------------------------------------------"):
+                break
+            if capture and line:
+                equipamento_info.append(line)
+
+        return '\n'.join(equipamento_info)
+    else:
+        return ""
 
 
 def janela_ordem(janela_principal):
@@ -40,47 +66,76 @@ def janela_ordem(janela_principal):
         causa = nome_causa.get()
         responsavel = nome_responsavel.get()
 
+        # Lê as informações adicionais do arquivo informacoes.txt para o equipamento específico
+        informacoes_adicionais = ler_informacoes(equipamento)
+
         nome_arquivo = f'ORDEM_SERVIÇO_{contador}.txt'
         with open(nome_arquivo, 'w') as arquivo:
             arquivo.write(f'\n'
-                          f'                   AlfaRigor madeiras\n'
+                          f'                   	   AlfaRigor madeiras\n'
+                          f'\n'
                           f'\n'
                           f'ORDEM DE SERVIÇO Nº {contador}\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'INFORMAÇÕES DO MOTOR:\n'
+                          f'\n'
+                          f'{informacoes_adicionais}\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
                           f'Data: {data_atual}\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
                           f'Nome: {nome}\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
                           f'Setor: {setor}\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
                           f'Equipamento: {equipamento}\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
                           f'Problema: {problema}\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
                           f'Solução: {solucao}\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
                           f'Causa: {causa}\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
-                          f'_______________________________________________________\n'
+                          f'_________________________________________________________________________\n'
                           f'\n'
-                          f'Data de execução: / / Técnico: {responsavel}\n'
-                          f'_______________________________________________________\n')
+                          f'Data de execução:    /   /                     Técnico: {responsavel}\n'
+                          f'_________________________________________________________________________\n')
         tk.Label(ordem, text='Ordem de serviço feita com sucesso!', font=('Helvetica', 14, 'bold'),
                  bg='grey').place(x=600, y=350)
         contador += 1
         salvar_contador(contador)
+
+        # Limpar os campos de entrada após salvar
+        nome_requisitante.set("")
+        nome_setor.set("")
+        nome_equipamento.set("")
+        nome_problema.set("")
+        nome_solucao.set("")
+        nome_causa.set("")
+        nome_responsavel.set("")
+
+    def abrir_arquivo():
+        nonlocal contador
+        if contador > 1:
+            nome_arquivo = f'ORDEM_SERVIÇO_{contador - 1}.txt'
+            if os.path.exists(nome_arquivo):
+                os.startfile(nome_arquivo)
+            else:
+                messagebox.showerror('Arquivo não encontrado', f'O arquivo {nome_arquivo} não existe.')
+        else:
+            messagebox.showwarning('Arquivo não criado', 'Nenhum arquivo de ordem de serviço foi criado ainda.')
 
     # Montagem da janela de ordem de serviço
     ordem = tk.Toplevel()
@@ -89,7 +144,7 @@ def janela_ordem(janela_principal):
     ordem.title('MOTORES')
 
     # Um título dentro da janela
-    titulo = tk.Label(ordem, text="ORDEM DE SERVIÇO", bg="#fff01a", font=('Helvetica', 14, 'bold'))
+    titulo = tk.Label(ordem, text="ORDEM DE SERVIÇO", bg="#1b15d1", font=('Helvetica', 14, 'bold'))
     titulo.pack(side=tk.TOP, fill=tk.X, ipady=20)
 
     # Definição de variáveis
@@ -104,6 +159,8 @@ def janela_ordem(janela_principal):
     nome_setor = tk.StringVar()
 
     # Labels e Entradas
+    tk.Label(ordem, text=f'Ordens geradas: {contador - 1}', font=('Helvetica', 12), bg='grey').place(x=40, y=150)
+
     tk.Label(ordem, text='Qual equipamento:', font=('Helvetica', 12), bg='grey').place(x=40, y=180)
     tk.Entry(ordem, textvariable=nome_equipamento, font=('Helvetica', 12)).place(x=40, y=200)
 
@@ -130,6 +187,9 @@ def janela_ordem(janela_principal):
 
     # Botão de salvar
     tk.Button(ordem, text="Salvar", font=("Helvetica", 12), command=criar_arquivo).place(x=550, y=450)
+
+    # Botão de abrir o arquivo mais recente
+    tk.Button(ordem, text="Imprimir", font=("Helvetica", 12), command=abrir_arquivo).place(x=670, y=450)
 
     def alternar_tela_cheia(event=None):
         estado_atual = ordem.attributes('-fullscreen')
