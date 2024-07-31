@@ -4,8 +4,6 @@ from lib.janelacadastro import janela_cadastrar
 from lib.janelaediçao import janela_edicao
 from lib.janelaordemservico import janela_ordem
 
-arquivo = 'Motores.txt'
-
 
 def sair():
     janela.destroy()

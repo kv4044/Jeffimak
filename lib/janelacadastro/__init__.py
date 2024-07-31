@@ -1,23 +1,10 @@
 import tkinter as tk
-from lib.funcao import *
 from tkinter import messagebox
+from lib.funcao import *
+from lib.models import Motor, initialize_db
 
-
-filepath = 'Motores.txt'
-counter_path = 'contador_motor.txt'
-
-
-def ler_contador():
-    try:
-        with open(counter_path, 'r') as file:
-            return int(file.read())
-    except (FileNotFoundError, ValueError):
-        return 0
-
-
-def salvar_contador(contador):
-    with open(counter_path, 'w') as file:
-        file.write(str(contador))
+# Inicializa o banco de dados
+initialize_db()
 
 
 def janela_cadastrar(janela_principal):
@@ -44,24 +31,23 @@ def janela_cadastrar(janela_principal):
         resultado_fator.config(text=f"O corrente de serviço é {fator_serv}A")
 
         try:
-            with open(filepath, 'a') as arquivo:
-                arquivo.write(f'{nome}\nPotencia = {potencia}W \nCorrente nominal = {corrente_e}A\n'
-                              f'Corrente de trabalho = {fator_serv}A \nRolamento = {rolamento}\n'
-                              f'Acoplamento = {acoplamento} \nFixacao = {fixa}\n')
-                arquivo.write('-----------------------------------------------------------------'
-                              '----------------------------------------------------------------\n')
+            Motor.create(
+                nome=nome,
+                potencia=potencia,
+                corrente_nominal=str(corrente_e),
+                corrente_trabalho=str(fator_serv),
+                rolamento=rolamento,
+                acoplamento=acoplamento,
+                fixacao=fixa
+            )
             label_salvo.config(text='Informações salvas com sucesso!')
 
-            # Incrementar o contador de motores e atualizar o rótulo
-            janela_cadastrar.motor_count += 1
-            salvar_contador(janela_cadastrar.motor_count)
-            contador_label.config(text=f"Total de motores cadastrados: {janela_cadastrar.motor_count}")
+            # Atualizar o rótulo do contador de motores
+            motor_contador = Motor.select().count()
+            contador_label.config(text=f"Total de motores cadastrados: {motor_contador}")
 
         except Exception as e:
-            messagebox.showerror("Salvar Arquivo", f"Ocorreu um erro ao salvar o arquivo: {e}")
-
-    # Inicializar o contador de motores
-    janela_cadastrar.motor_count = ler_contador()
+            messagebox.showerror("Salvar Arquivo", f"Ocorreu um erro ao salvar o motor no banco de dados: {e}")
 
     # Montagem da janela de cadastro
     cadastrar = tk.Toplevel()
@@ -74,7 +60,8 @@ def janela_cadastrar(janela_principal):
     titulo.pack(side=tk.TOP, fill=tk.X, ipady=20)
 
     # Rótulo para exibir o contador de motores
-    contador_label = tk.Label(cadastrar, text=f"Total de motores cadastrados: {janela_cadastrar.motor_count}",
+    motor_count = Motor.select().count()
+    contador_label = tk.Label(cadastrar, text=f"Total de motores cadastrados: {motor_count}",
                               font=('helvica', 12), bg='grey')
     contador_label.place(x=40, y=140)
 
