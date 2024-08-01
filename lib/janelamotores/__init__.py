@@ -27,7 +27,8 @@ def janela_motores(janela_principal):
 
             if resultados:
                 for motor in resultados:
-                    texto_motores.insert(tk.END, f"Nome: {motor.nome}\n"
+                    texto_motores.insert(tk.END, f"ID: {motor.id}\n1"
+                                                 f"Nome: {motor.nome}\n"
                                                  f"Potência: {motor.potencia}W\n"
                                                  f"Corrente Nominal: {motor.corrente_nominal}A\n"
                                                  f"Corrente de Trabalho: {motor.corrente_trabalho}A\n"
@@ -47,7 +48,7 @@ def janela_motores(janela_principal):
             texto_motores.delete('1.0', tk.END)
             if resultados:
                 for motor in resultados:
-                    texto_motores.insert(tk.END, f"id: {motor.id}\n"
+                    texto_motores.insert(tk.END, f"ID: {motor.id}\n"
                                                  f"Nome: {motor.nome}\n"
                                                  f"Potência: {motor.potencia}W\n"
                                                  f"Corrente Nominal: {motor.corrente_nominal}A\n"

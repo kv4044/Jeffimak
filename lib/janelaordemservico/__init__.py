@@ -2,145 +2,22 @@ import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
 import os
-from peewee import SqliteDatabase, Model, CharField, OperationalError
-
-# Configuração do banco de dados
-db = SqliteDatabase('motores.db')
+from lib.models import initialize_db, buscar_motor, carregar_contador, salvar_contador
 
 
-class Motor(Model):
-    nome = CharField()
-    potencia = CharField()
-    corrente_nominal = CharField()
-    corrente_trabalho = CharField()
-    rolamento = CharField()
-    acoplamento = CharField()
-    fixacao = CharField()
-
-    class Meta:
-        database = db
-
-
-def initialize_db():
-    try:
-        db.connect()
-        db.create_tables([Motor], safe=True)
-    except OperationalError:
-        print("Erro ao conectar ao banco de dados.")
-    finally:
-        if not db.is_closed():
-            db.close()
-
-
-# Funções de gestão de contador
-contador_path = 'contador_os.txt'
-
-
-def carregar_contador():
-    if os.path.exists(contador_path):
-        with open(contador_path, 'r') as f:
-            return int(f.read().strip())
-    return 1
-
-
-def salvar_contador(valor):
-    with open(contador_path, 'w') as f:
-        f.write(str(valor))
-
-
-# Funções de leitura do banco de dados
 def ler_informacoes(equipamento):
-    try:
-        motor = Motor.get(Motor.nome == equipamento)
-        return (f"Nome: {motor.nome}\n"
-                f"Potência: {motor.potencia}\n"
-                f"Corrente Nominal: {motor.corrente_nominal}\n"
-                f"Corrente de Trabalho: {motor.corrente_trabalho}\n"
-                f"Rolamento: {motor.rolamento}\n"
-                f"Acoplamento: {motor.acoplamento}\n"
-                f"Fixação: {motor.fixacao}\n")
-    except Motor.DoesNotExist:
-        return "Informações não encontradas para o equipamento."
+    informacoes = buscar_motor(equipamento)
+    if informacoes:
+        return (f"Nome: {informacoes['nome']}\n"
+                f"Potência: {informacoes['potencia']}\n"
+                f"Corrente Nominal: {informacoes['corrente_nominal']}\n"
+                f"Corrente de Trabalho: {informacoes['corrente_trabalho']}\n"
+                f"Rolamento: {informacoes['rolamento']}\n"
+                f"Acoplamento: {informacoes['acoplamento']}\n"
+                f"Fixação: {informacoes['fixacao']}\n")
+    return "Informações não encontradas para o equipamento."
 
 
-# Função para gerar ordem de serviço
-def gerar_os():
-    global contador
-
-    data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
-
-    nome = nome_requisitante.get()
-    setor = nome_setor.get()
-    equipamento = nome_equipamento.get()
-    problema = nome_problema.get()
-    solucao = nome_solucao.get()
-    causa = nome_causa.get()
-    responsavel = nome_responsavel.get()
-
-    informacoes_adicionais = ler_informacoes(equipamento)
-    nome_arquivo = f'ORDEM_SERVIÇO_{contador}.txt'
-
-    with open(nome_arquivo, 'w') as arquivo:
-        arquivo.write(f'\n'
-                      f'                   	   AlfaRigor madeiras\n'
-                      f'\n'
-                      f'ORDEM DE SERVIÇO Nº {contador}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'INFORMAÇÕES DO MOTOR:\n'
-                      f'\n'
-                      f'{informacoes_adicionais}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'Data: {data_atual}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'Nome: {nome}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'Setor: {setor}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'Equipamento: {equipamento}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'Problema: {problema}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'Solução: {solucao}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'Causa: {causa}\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'_________________________________________________________________________\n'
-                      f'\n'
-                      f'Data de execução:    /   /                     Técnico: {responsavel}\n'
-                      f'_________________________________________________________________________\n')
-
-    tk.Label(ordem, text='Ordem de serviço feita com sucesso!', font=('Helvetica', 14, 'bold'), bg='grey').place(x=600,
-                                                                                                                 y=350)
-
-    contador += 1
-    salvar_contador(contador)
-
-    # Limpar os campos de entrada após salvar
-    nome_requisitante.set("")
-    nome_setor.set("")
-    nome_equipamento.set("")
-    nome_problema.set("")
-    nome_solucao.set("")
-    nome_causa.set("")
-    nome_responsavel.set("")
-
-    atualizar_contador_na_interface()
-
-
-# Função para abrir o arquivo
 def abrir_arquivo():
     contador = carregar_contador()
     if contador > 1:
@@ -153,10 +30,10 @@ def abrir_arquivo():
         messagebox.showwarning('Arquivo não criado', 'Nenhum arquivo de ordem de serviço foi criado ainda.')
 
 
-# Função para atualizar a hora e o minuto na ‘interface’
 def atualizar_relogio():
+    global relogio, ordem
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
-    relogio.config(text=f'Data e Hora: {agora}')
+    relogio.config(text=f'{agora}')
     ordem.after(1000, atualizar_relogio)  # Atualiza a cada 1000 ms (1 segundo)
 
 
@@ -164,16 +41,89 @@ def atualizar_contador_na_interface():
     ordens_geradas.set(f'Ordens geradas: {carregar_contador() - 1}')
 
 
-# Função para criar a janela de ordem de serviço
-def janela_ordem(janela_principal):
-    global ordem, relogio, ordens_geradas
+def janela_ordem(janela_principal, atualizar_funcao):
+    global relogio, ordem, ordens_geradas, nome_equipamento, nome_problema, nome_solucao, nome_causa, nome_requisitante, nome_responsavel, nome_setor, contador
 
-    janela_principal.withdraw()
+    janela_principal.withdraw()  # Oculta a janela principal
+
+    def gerar_os():
+        global contador
+
+        data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+        nome = nome_requisitante.get()
+        setor = nome_setor.get()
+        equipamento = nome_equipamento.get()
+        problema = nome_problema.get()
+        solucao = nome_solucao.get()
+        causa = nome_causa.get()
+        responsavel = nome_responsavel.get()
+
+        informacoes_adicionais = ler_informacoes(equipamento)
+        nome_arquivo = f'ORDEM_SERVIÇO_{contador}.txt'
+
+        with open(nome_arquivo, 'w') as arquivo:
+            arquivo.write(f'\n'
+                          f'                   	   AlfaRigor madeiras\n'
+                          f'\n'
+                          f'ORDEM DE SERVIÇO Nº {contador}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'INFORMAÇÕES DO MOTOR:\n'
+                          f'\n'
+                          f'{informacoes_adicionais}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'Data: {data_atual}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'Nome: {nome}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'Setor: {setor}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'Equipamento: {equipamento}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'Problema: {problema}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'Solução: {solucao}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'Causa: {causa}\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'_________________________________________________________________________\n'
+                          f'\n'
+                          f'Data de execução:    /   /                     Técnico: {responsavel}\n'
+                          f'_________________________________________________________________________\n')
+
+        tk.Label(ordem, text='Ordem de serviço feita com sucesso!', font=('Helvetica', 14, 'bold'), bg='grey').place(
+            x=600, y=350)
+
+        contador += 1
+        salvar_contador(contador)
+
+        # Limpar os campos de entrada após salvar
+        nome_requisitante.set("")
+        nome_setor.set("")
+        nome_equipamento.set("")
+        nome_problema.set("")
+        nome_solucao.set("")
+        nome_causa.set("")
+        nome_responsavel.set("")
+
+        atualizar_contador_na_interface()
+        atualizar_funcao()  # Atualizar a tela principal
 
     # Inicializa o banco de dados
     initialize_db()
-
-    global nome_equipamento, nome_problema, nome_solucao, nome_causa, nome_requisitante, nome_responsavel, nome_setor, contador
 
     nome_equipamento = tk.StringVar()
     nome_problema = tk.StringVar()
@@ -215,7 +165,7 @@ def janela_ordem(janela_principal):
     tk.Label(ordem, text='Responsável:', font=('Helvetica', 12), bg='grey').place(x=310, y=350)
     tk.Entry(ordem, textvariable=nome_responsavel, font=('Helvetica', 12)).place(x=310, y=370)
 
-    tk.Label(ordem, text='Data e Hora:', font=('Helvetica', 12), bg='grey').place(x=310, y=180)
+    tk.Label(ordem, text='Data:', font=('Helvetica', 12), bg='grey').place(x=310, y=180)
     relogio = tk.Label(ordem, text=f'{datetime.now().strftime("%d/%m/%Y %H:%M")}', font=('Helvetica', 12), bg='grey')
     relogio.place(x=310, y=200)
 

@@ -7,7 +7,12 @@ from lib.models import Motor, initialize_db
 initialize_db()
 
 
-def janela_cadastrar(janela_principal):
+def contar_motores():
+    motor_contador = Motor.select().count()
+    return motor_contador
+
+
+def janela_cadastrar(janela_principal, atualizar_funcao):
     janela_principal.withdraw()
 
     def enter(event=None):
@@ -42,12 +47,21 @@ def janela_cadastrar(janela_principal):
             )
             label_salvo.config(text='Informações salvas com sucesso!')
 
+            # Atualizar o contador de motores
+            atualizar_funcao()
+
             # Atualizar o rótulo do contador de motores
             motor_contador = Motor.select().count()
             contador_label.config(text=f"Total de motores cadastrados: {motor_contador}")
 
         except Exception as e:
             messagebox.showerror("Salvar Arquivo", f"Ocorreu um erro ao salvar o motor no banco de dados: {e}")
+
+        nome_motor.set('')
+        potencia_motor.set('')
+        rolamento_motor.set('')
+        acoplamento_motor.set('')
+        fixa_motor.set('')
 
     # Montagem da janela de cadastro
     cadastrar = tk.Toplevel()

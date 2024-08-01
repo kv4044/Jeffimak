@@ -1,8 +1,19 @@
 import tkinter as tk
 from lib.janelamotores import janela_motores
 from lib.janelacadastro import janela_cadastrar
+from lib.janelacadastro import contar_motores
 from lib.janelaediçao import janela_edicao
 from lib.janelaordemservico import janela_ordem
+from lib.models import carregar_contador
+
+
+def atualizar_tela_principal():
+    total_motores = contar_motores()
+    total_os = carregar_contador() - 1
+
+    # Atualizar os rótulos com as novas contagens
+    total_motores_label.config(text=f'Total de motores: {total_motores}')
+    total_os_label.config(text=f'Total de ordem de serviço: {total_os}')
 
 
 def sair():
@@ -19,10 +30,20 @@ janela.title('MOTORES')
 titulo = tk.Label(janela, text="MENU", bg="#1af4ff", font=('helvica', 14, 'bold'))
 titulo.pack(side=tk.TOP, fill=tk.X, ipady=20, )
 
+# Labels para mostrar contagens
+total_motores_label = tk.Label(janela, font=('helvica', 12), bg='grey')
+total_motores_label.place(x=55, y=260)
+
+total_os_label = tk.Label(janela, font=('helvica', 12), bg='grey')
+total_os_label.place(x=540, y=260)
+
+# Atualizar a tela inicial com contagens
+atualizar_tela_principal()
+
 # Botão que leva para janela de cadastro
 botao1 = tk.Button(text='Cadastrar motor',
                    bg='lightgreen',
-                   command=lambda: janela_cadastrar(janela),
+                   command=lambda: janela_cadastrar(janela, atualizar_tela_principal),
                    font=('helvica', 12, 'bold'),
                    width=16,
                    height=2)
@@ -49,7 +70,7 @@ botao3.place(x=560, y=150)
 # Botão de gerar ordem de serviço
 botao4 = tk.Button(text='Ordem de serviço',
                    bg='lightgreen',
-                   command=lambda: janela_ordem(janela),
+                   command=lambda: janela_ordem(janela, atualizar_tela_principal),
                    font=('helvica', 12, 'bold'),
                    width=16,
                    height=2)
