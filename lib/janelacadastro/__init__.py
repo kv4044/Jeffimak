@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from lib.funcao import *
+from lib.funcao import fator_serviço, corrente
 from lib.models import Motor, initialize_db
 
 # Inicializa o banco de dados
