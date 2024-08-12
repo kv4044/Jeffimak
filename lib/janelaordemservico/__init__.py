@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
 import os
-from lib.models import initialize_db, buscar_motor, carregar_contador, salvar_contador
+from lib.models_motor import initialize_db, buscar_motor, carregar_contador, salvar_contador
 
 
 def ler_informacoes(equipamento):
@@ -140,40 +140,40 @@ def janela_ordem(janela_principal, atualizar_funcao):
     ordem.configure(bg='grey')
     ordem.title('MOTORES')
 
-    titulo = tk.Label(ordem, text="ORDEM DE SERVIÇO", bg="#1b15d1", font=('Helvetica', 14, 'bold'))
+    titulo = tk.Label(ordem, text="ORDEM DE SERVIÇO", bg="#1b15d1", font=('Helvetica', 16, 'bold'))
     titulo.pack(side=tk.TOP, fill=tk.X, ipady=20)
 
     ordens_geradas = tk.StringVar()
     ordens_geradas.set(f'Ordens geradas: {contador - 1}')
-    tk.Label(ordem, textvariable=ordens_geradas, font=('Helvetica', 12), bg='grey').place(x=40, y=150)
+    tk.Label(ordem, textvariable=ordens_geradas, font=('helvica', 14, 'bold'), bg='grey').place(x=40, y=150)
 
-    tk.Label(ordem, text='Equipamento:', font=('Helvetica', 12), bg='grey').place(x=40, y=180)
-    tk.Entry(ordem, textvariable=nome_equipamento, font=('Helvetica', 12)).place(x=40, y=200)
+    tk.Label(ordem, text='Equipamento:', font=('helvica', 14, 'bold'), bg='grey').place(x=40, y=180)
+    tk.Entry(ordem, textvariable=nome_equipamento, font=('helvica', 14, 'bold')).place(x=40, y=210)
 
-    tk.Label(ordem, text='Problema:', font=('Helvetica', 12), bg='grey').place(x=40, y=270)
-    tk.Entry(ordem, textvariable=nome_problema, font=('Helvetica', 12)).place(x=40, y=290)
+    tk.Label(ordem, text='Problema:', font=('helvica', 14, 'bold'), bg='grey').place(x=40, y=270)
+    tk.Entry(ordem, textvariable=nome_problema, font=('helvica', 14, 'bold')).place(x=40, y=300)
 
-    tk.Label(ordem, text='Solução:', font=('Helvetica', 12), bg='grey').place(x=40, y=350)
-    tk.Entry(ordem, textvariable=nome_solucao, font=('Helvetica', 12)).place(x=40, y=370)
+    tk.Label(ordem, text='Solução:', font=('helvica', 14, 'bold'), bg='grey').place(x=40, y=350)
+    tk.Entry(ordem, textvariable=nome_solucao, font=('helvica', 14, 'bold')).place(x=40, y=380)
 
-    tk.Label(ordem, text='Causa:', font=('Helvetica', 12), bg='grey').place(x=40, y=430)
-    tk.Entry(ordem, textvariable=nome_causa, font=('Helvetica', 12)).place(x=40, y=450)
+    tk.Label(ordem, text='Causa:', font=('helvica', 14, 'bold'), bg='grey').place(x=40, y=430)
+    tk.Entry(ordem, textvariable=nome_causa, font=('helvica', 14, 'bold')).place(x=40, y=460)
 
-    tk.Label(ordem, text='Requisitante:', font=('Helvetica', 12), bg='grey').place(x=310, y=270)
-    tk.Entry(ordem, textvariable=nome_requisitante, font=('Helvetica', 12)).place(x=310, y=290)
+    tk.Label(ordem, text='Requisitante:', font=('helvica', 14, 'bold'), bg='grey').place(x=310, y=270)
+    tk.Entry(ordem, textvariable=nome_requisitante, font=('helvica', 14, 'bold')).place(x=310, y=300)
 
-    tk.Label(ordem, text='Responsável:', font=('Helvetica', 12), bg='grey').place(x=310, y=350)
-    tk.Entry(ordem, textvariable=nome_responsavel, font=('Helvetica', 12)).place(x=310, y=370)
+    tk.Label(ordem, text='Responsável:', font=('helvica', 14, 'bold'), bg='grey').place(x=310, y=350)
+    tk.Entry(ordem, textvariable=nome_responsavel, font=('helvica', 14, 'bold')).place(x=310, y=380)
 
-    tk.Label(ordem, text='Data:', font=('Helvetica', 12), bg='grey').place(x=310, y=180)
-    relogio = tk.Label(ordem, text=f'{datetime.now().strftime("%d/%m/%Y %H:%M")}', font=('Helvetica', 12), bg='grey')
-    relogio.place(x=310, y=200)
+    tk.Label(ordem, text='Data:', font=('helvica', 14, 'bold'), bg='grey').place(x=310, y=180)
+    relogio = tk.Label(ordem, text=f'{datetime.now().strftime("%d/%m/%Y %H:%M")}', font=('helvica', 14, 'bold'), bg='grey')
+    relogio.place(x=310, y=210)
 
-    tk.Label(ordem, text='Setor:', font=('Helvetica', 12), bg='grey').place(x=310, y=430)
-    tk.Entry(ordem, textvariable=nome_setor, font=('Helvetica', 12)).place(x=310, y=450)
+    tk.Label(ordem, text='Setor:', font=('helvica', 14, 'bold'), bg='grey').place(x=310, y=430)
+    tk.Entry(ordem, textvariable=nome_setor, font=('helvica', 14, 'bold')).place(x=310, y=460)
 
-    tk.Button(ordem, text="Salvar", font=("Helvetica", 12), command=gerar_os).place(x=550, y=450)
-    tk.Button(ordem, text="Imprimir", font=("Helvetica", 12), command=abrir_arquivo).place(x=670, y=450)
+    tk.Button(ordem, text="Salvar", font=('helvica', 14, 'bold'), command=gerar_os).place(x=550, y=450)
+    tk.Button(ordem, text="Imprimir", font=('helvica', 14, 'bold'), command=abrir_arquivo).place(x=670, y=450)
 
     def alternar_tela_cheia(event=None):
         estado_atual = ordem.attributes('-fullscreen')
@@ -185,7 +185,7 @@ def janela_ordem(janela_principal, atualizar_funcao):
     ordem.attributes('-fullscreen', True)
 
     tk.Button(ordem, text='Sair', bg='#81ff1a', command=lambda: fechar_janelacadastro(ordem, janela_principal),
-              font=('Helvetica', 12, 'bold'), width=13, height=1).place(x=1170, y=640)
+              font=('Helvetica', 14, 'bold'), width=13, height=1).place(x=1170, y=640)
 
     atualizar_relogio()  # Inicia a atualização do relógio
     ordem.mainloop()

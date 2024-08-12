@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from lib.models import Motor
+from lib.models_motor import Motor
 
 
 def janela_edicao(janela_principal):

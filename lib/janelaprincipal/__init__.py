@@ -4,7 +4,8 @@ from lib.janelacadastro import janela_cadastrar
 from lib.janelacadastro import contar_motores
 from lib.janelaediçao import janela_edicao
 from lib.janelaordemservico import janela_ordem
-from lib.models import carregar_contador
+from lib.janelaoleo import janela_oleo
+from lib.models_motor import carregar_contador
 
 
 def atualizar_tela_principal():
@@ -31,11 +32,11 @@ titulo = tk.Label(janela, text="MENU", bg="#1af4ff", font=('helvica', 14, 'bold'
 titulo.pack(side=tk.TOP, fill=tk.X, ipady=20, )
 
 # Labels para mostrar contagens
-total_motores_label = tk.Label(janela, font=('helvica', 12), bg='grey')
+total_motores_label = tk.Label(janela, font=('helvica', 12, 'bold'), bg='grey')
 total_motores_label.place(x=55, y=260)
 
-total_os_label = tk.Label(janela, font=('helvica', 12), bg='grey')
-total_os_label.place(x=540, y=260)
+total_os_label = tk.Label(janela, font=('helvica', 12, 'bold'), bg='grey')
+total_os_label.place(x=520, y=260)
 
 # Atualizar a tela inicial com contagens
 atualizar_tela_principal()
@@ -76,13 +77,22 @@ botao4 = tk.Button(text='Ordem de serviço',
                    height=2)
 botao4.place(x=300, y=250)
 
-# Botão de sair
-botao5 = tk.Button(text='Sair',
+# Botão de controle do oleo
+botao5 = tk.Button(text='Controle de óleo',
                    bg='lightgreen',
-                   command=sair,
+                   command=lambda: janela_oleo(janela),
                    font=('helvica', 12, 'bold'),
                    width=16,
                    height=2)
-botao5.place(x=300, y=430)
+botao5.place(x=300, y=340)
+
+# Botão de sair
+botao_sair = tk.Button(text='Sair',
+                       bg='lightgreen',
+                       command=sair,
+                       font=('helvica', 12, 'bold'),
+                       width=16,
+                       height=2)
+botao_sair.place(x=300, y=430)
 
 janela.mainloop()
