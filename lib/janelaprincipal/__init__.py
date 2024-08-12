@@ -4,7 +4,7 @@ from lib.janelacadastro import janela_cadastrar
 from lib.janelacadastro import contar_motores
 from lib.janelaediçao import janela_edicao
 from lib.janelaordemservico import janela_ordem
-from lib.janelaoleo import janela_oleo
+from lib.janelaoleo import janela_oleos
 from lib.models_motor import carregar_contador
 
 
@@ -80,7 +80,7 @@ botao4.place(x=300, y=250)
 # Botão de controle do oleo
 botao5 = tk.Button(text='Controle de óleo',
                    bg='lightgreen',
-                   command=lambda: janela_oleo(janela),
+                   command=lambda: janela_oleos(janela),
                    font=('helvica', 12, 'bold'),
                    width=16,
                    height=2)

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from lib.funcao import fator_serviço, corrente
-from lib.models import Motor, initialize_db
+from lib.models_motor import Motor, initialize_db
 
 # Inicializa o banco de dados
 initialize_db()
@@ -70,65 +70,65 @@ def janela_cadastrar(janela_principal, atualizar_funcao):
     cadastrar.title('MOTORES')
 
     # Um título dentro da janela
-    titulo = tk.Label(cadastrar, text="CADASTRO DE MOTORES", bg="#ff1a1a", font=('helvica', 14, 'bold'))
+    titulo = tk.Label(cadastrar, text="CADASTRO DE MOTORES", bg="#ff1a1a", font=('helvica', 16, 'bold'))
     titulo.pack(side=tk.TOP, fill=tk.X, ipady=20)
 
     # Rótulo para exibir o contador de motores
     motor_count = Motor.select().count()
     contador_label = tk.Label(cadastrar, text=f"Total de motores cadastrados: {motor_count}",
-                              font=('helvica', 12), bg='grey')
+                              font=('helvica', 14, 'bold'), bg='grey')
     contador_label.place(x=40, y=140)
 
     # Para salvar o nome do motor
-    label_nome = tk.Label(cadastrar, text='Nome do motor:', font=('helvica', 12), bg='grey')
+    label_nome = tk.Label(cadastrar, text='Nome do motor:', font=('helvica', 14, 'bold'), bg='grey')
     label_nome.place(x=40, y=180)
     nome_motor = tk.StringVar()
-    entrada_nome = tk.Entry(cadastrar, textvariable=nome_motor, font=('helvica', 12))
-    entrada_nome.place(x=40, y=200)
+    entrada_nome = tk.Entry(cadastrar, textvariable=nome_motor, font=('helvica', 14, 'bold'))
+    entrada_nome.place(x=40, y=210)
 
     # Para salvar a potência do motor
-    label_motor = tk.Label(cadastrar, text='Potência do motor:', font=('helvica', 12), bg='grey')
+    label_motor = tk.Label(cadastrar, text='Potência do motor:', font=('helvica', 14, 'bold'), bg='grey')
     label_motor.place(x=40, y=260)
     potencia_motor = tk.StringVar()
-    entrada_motor = tk.Entry(cadastrar, textvariable=potencia_motor, font=('helvica', 12))
-    entrada_motor.place(x=40, y=280)
+    entrada_motor = tk.Entry(cadastrar, textvariable=potencia_motor, font=('helvica', 14, 'bold'))
+    entrada_motor.place(x=40, y=290)
 
     # Tipo de rolamento
-    label_rolamento = tk.Label(cadastrar, text='Rolamento:', font=('helvica', 12), bg='grey')
+    label_rolamento = tk.Label(cadastrar, text='Rolamento:', font=('helvica', 14, 'bold'), bg='grey')
     label_rolamento.place(x=40, y=340)
     rolamento_motor = tk.StringVar()
-    entrada_rolamento = tk.Entry(cadastrar, textvariable=rolamento_motor, font=('helvica', 12))
-    entrada_rolamento.place(x=40, y=360)
+    entrada_rolamento = tk.Entry(cadastrar, textvariable=rolamento_motor, font=('helvica', 14, 'bold'))
+    entrada_rolamento.place(x=40, y=370)
 
     # Tipo de acoplamento
-    label_acoplamento = tk.Label(cadastrar, text='Acoplamento:', font=('helvica', 12), bg='grey')
+    label_acoplamento = tk.Label(cadastrar, text='Acoplamento:', font=('helvica', 14, 'bold'), bg='grey')
     label_acoplamento.place(x=300, y=260)
     acoplamento_motor = tk.StringVar()
-    entrada_acoplamento = tk.Entry(cadastrar, textvariable=acoplamento_motor, font=('helvica', 12))
-    entrada_acoplamento.place(x=300, y=280)
+    entrada_acoplamento = tk.Entry(cadastrar, textvariable=acoplamento_motor, font=('helvica', 14, 'bold'))
+    entrada_acoplamento.place(x=300, y=290)
 
     # Tipo de fixação
-    label_patas = tk.Label(cadastrar, text='Fixação:', font=('helvica', 12), bg='grey')
+    label_patas = tk.Label(cadastrar, text='Fixação:', font=('helvica', 14, 'bold'), bg='grey')
     label_patas.place(x=300, y=180)
     fixa_motor = tk.StringVar()
-    entrada_patas = tk.Entry(cadastrar, textvariable=fixa_motor, font=('helvica', 12))
-    entrada_patas.place(x=300, y=200)
+    entrada_patas = tk.Entry(cadastrar, textvariable=fixa_motor, font=('helvica', 14, 'bold'))
+    entrada_patas.place(x=300, y=210)
 
     # Botão de salvar
-    salvar_botao = tk.Button(cadastrar, text="Salvar", font=("helvica", 12), command=mostrar_informacao)
+    salvar_botao = tk.Button(cadastrar, text="Salvar", font=('helvica', 14, 'bold'), command=mostrar_informacao)
     salvar_botao.place(x=350, y=360)
 
     # Label para mostrar que as informações foram salvas
     label_salvo = tk.Label(cadastrar, text="", bg='grey', font=('helvica', 14, 'bold'))
-    label_salvo.place(x=500, y=560)
+    label_salvo.place(x=520, y=560)
 
     # Apertar o botão enter do teclado
     cadastrar.bind('<Return>', enter)
 
     # Escrita da corrente e fator na janela
-    resultado_corrente = tk.Label(cadastrar, text="", font=("helvica", 12, 'bold'), bg='grey')
+    resultado_corrente = tk.Label(cadastrar, text="", font=('helvica', 14, 'bold'), bg='grey')
     resultado_corrente.place(x=590, y=200)
-    resultado_fator = tk.Label(cadastrar, text="", font=("helvica", 12, 'bold'), bg='grey')
+    resultado_fator = tk.Label(cadastrar, text="", font=('helvica', 14, 'bold'), bg='grey')
     resultado_fator.place(x=550, y=280)
 
     # Função para alternar entre tela cheia e janela normal
@@ -148,7 +148,7 @@ def janela_cadastrar(janela_principal, atualizar_funcao):
                            text='Sair',
                            bg='#81ff1a',
                            command=lambda: fechar_janelacadastro(cadastrar, janela_principal),
-                           font=('helvica', 12, 'bold'),
+                           font=('helvica', 14, 'bold'),
                            width=13,
                            height=1)
     botao_sair.place(x=590, y=640)
