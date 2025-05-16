@@ -1,69 +1,70 @@
-Desenvolvido em Python aos 16 anos como solução prática para um ambiente industrial, este sistema permite a gestão completa de motores elétricos de alta potência.
+# ⚙️ Sistema de Gestão de Motores de Alta Potência
 
-A aplicação possui uma interface gráfica intuitiva feita com Tkinter, banco de dados gerido com Peewee (ORM) e exportação de ordens de serviço em PDF.
+Desenvolvido em **Python aos 16 anos** como solução prática para um ambiente industrial, este sistema permite a **gestão completa de motores elétricos de alta potência**.
 
-Funcionalidades principais:
+A aplicação conta com:
+- Interface gráfica com **Tkinter**
+- Banco de dados com **Peewee (ORM + SQLite)**
+- Geração de ordens de serviço em **PDF**
+- Navegação por menus para cadastro, edição e controle técnico
 
-Cadastro de motores com dados técnicos:
+---
 
--Nome do motor
+## 🧰 Funcionalidades principais
 
--Potência (W)
+- Cadastro de motores com:
+  - Nome
+  - Potência
+  - Tipo de rolamento, afixação e acoplamento
+- Cálculo de corrente nominal e corrente de serviço
+- Edição e consulta de motores
+- Controle de óleo
+- Geração e exportação de ordens de serviço em PDF
 
--Tipo de rolamento
+---
 
--Tipo de afixação
+## 🖼️ Capturas de Tela
 
--Tipo de acoplamento
-
-
-
-Cálculo automático:
-
--Corrente nominal
-
--Corrente de serviço
-
-
-Navegação organizada por menus:
-
--Cadastro de motores
-
--Consulta e edição de cadastros
-
--Geração de ordens de serviço, com:
-
-*Equipamento
-
-*Problema identificado
-
-*Requisitante
-
-*Solução
-
-*Responsável
-
-*Causa
-
-*Setor envolvido
+### Tela principal do sistema
+![Captura de ecrã 2025-05-16 155607](https://github.com/user-attachments/assets/c0503ac7-bc06-4c57-a34f-dbbb96fc69cf)
 
 
-Controle de óleo dos motores
+---
+
+### Cadastro de novo motor
+![Captura de ecrã 2025-05-16 160126](https://github.com/user-attachments/assets/e69db7bb-6bcb-4e2d-9e51-db670c25e7df)
 
 
-Exportação das ordens de serviço em PDF
+---
+
+### Lista de motores cadastrados
+![Captura de ecrã 2025-05-16 160140](https://github.com/user-attachments/assets/872b50cf-f60c-4570-810a-f9a772b11e52)
 
 
-Tecnologias utilizadas:
+---
 
--Python 3
-
--Tkinter (GUI)
-
--Peewee (ORM com SQLite)
-
--ReportLab (para geração de PDFs)
+### Geração de ordem de serviço
+![Captura de ecrã 2025-05-16 160258](https://github.com/user-attachments/assets/72176b42-b150-4d9a-a101-d59f8c174ccc)
 
 
-Objetivo: Automatizar o processo de cadastro e manutenção de motores industriais, reduzindo falhas humanas e centralizando os dados técnicos e operacionais.
+---
+
+### Controle de óleo
+![Captura de ecrã 2025-05-16 160443](https://github.com/user-attachments/assets/0fe2b781-bebf-4122-833a-4fc456007b64)
+
+
+---
+
+## 🛠️ Tecnologias utilizadas
+
+- Python 3  
+- Tkinter (interface gráfica)  
+- Peewee (ORM com SQLite)  
+- ReportLab (PDF)
+
+---
+
+## 🎯 Objetivo
+
+> Automatizar o cadastro e manutenção de motores industriais, centralizando dados técnicos e facilitando o controle operacional com interface simples e geração de relatórios.
 
