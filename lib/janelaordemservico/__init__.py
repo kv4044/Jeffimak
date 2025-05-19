@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
 import os
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 from lib.models_motor import initialize_db, buscar_motor, carregar_contador, salvar_contador
 
 
@@ -21,7 +23,7 @@ def ler_informacoes(equipamento):
 def abrir_arquivo():
     contador = carregar_contador()
     if contador > 1:
-        nome_arquivo = f'ORDEM_SERVIÇO_{contador - 1}.txt'
+        nome_arquivo = f'ORDEM_SERVIÇO_{contador - 1}.pdf'
         if os.path.exists(nome_arquivo):
             os.startfile(nome_arquivo)
         else:
@@ -34,7 +36,7 @@ def atualizar_relogio():
     global relogio, ordem
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
     relogio.config(text=f'{agora}')
-    ordem.after(1000, atualizar_relogio)  # Atualiza a cada 1000 ms (1 segundo)
+    ordem.after(1000, atualizar_relogio)
 
 
 def atualizar_contador_na_interface():
@@ -44,7 +46,7 @@ def atualizar_contador_na_interface():
 def janela_ordem(janela_principal, atualizar_funcao):
     global relogio, ordem, ordens_geradas, nome_equipamento, nome_problema, nome_solucao, nome_causa, nome_requisitante, nome_responsavel, nome_setor, contador
 
-    janela_principal.withdraw()  # Oculta a janela principal
+    janela_principal.withdraw()
 
     def gerar_os():
         global contador
@@ -60,49 +62,41 @@ def janela_ordem(janela_principal, atualizar_funcao):
         responsavel = nome_responsavel.get()
 
         informacoes_adicionais = ler_informacoes(equipamento)
-        nome_arquivo = f'ORDEM_SERVIÇO_{contador}.txt'
+        nome_arquivo = f'ORDEM_SERVIÇO_{contador}.pdf'
 
-        with open(nome_arquivo, 'w') as arquivo:
-            arquivo.write(f'\n'
-                          f'                   	   AlfaRigor madeiras\n'
-                          f'\n'
-                          f'ORDEM DE SERVIÇO Nº {contador}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'INFORMAÇÕES DO MOTOR:\n'
-                          f'\n'
-                          f'{informacoes_adicionais}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'Data: {data_atual}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'Nome: {nome}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'Setor: {setor}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'Equipamento: {equipamento}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'Problema: {problema}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'Solução: {solucao}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'Causa: {causa}\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'_________________________________________________________________________\n'
-                          f'\n'
-                          f'Data de execução:    /   /                     Técnico: {responsavel}\n'
-                          f'_________________________________________________________________________\n')
+        # Gerar PDF com reportlab
+        c = canvas.Canvas(nome_arquivo, pagesize=A4)
+        largura, altura = A4
+        y = altura - 50
+
+        def escrever_linha(texto, pulo=20):
+            nonlocal y
+            c.drawString(50, y, texto)
+            y -= pulo
+
+        escrever_linha("AlfaRigor Madeiras", 30)
+        escrever_linha(f"ORDEM DE SERVIÇO Nº {contador}", 20)
+        escrever_linha("__________________________________________________________________", 20)
+        escrever_linha("INFORMAÇÕES DO MOTOR:", 20)
+        for linha in informacoes_adicionais.strip().split("\n"):
+            escrever_linha(linha)
+        escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(f"Data: {data_atual}", 20)
+        escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(f"Nome: {nome}", 20)
+        escrever_linha(f"Setor: {setor}", 20)
+        escrever_linha(f"Equipamento: {equipamento}", 20)
+        escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(f"Problema: {problema}", 20)
+        escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(f"Solução: {solucao}", 20)
+        escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(f"Causa: {causa}", 20)
+        escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(f"Data de execução:    /   /                     Técnico: {responsavel}", 20)
+        escrever_linha("__________________________________________________________________", 20)
+
+        c.save()
 
         tk.Label(ordem, text='Ordem de serviço feita com sucesso!', font=('Helvetica', 14, 'bold'), bg='grey').place(
             x=600, y=350)
@@ -110,7 +104,6 @@ def janela_ordem(janela_principal, atualizar_funcao):
         contador += 1
         salvar_contador(contador)
 
-        # Limpar os campos de entrada após salvar
         nome_requisitante.set("")
         nome_setor.set("")
         nome_equipamento.set("")
@@ -120,9 +113,8 @@ def janela_ordem(janela_principal, atualizar_funcao):
         nome_responsavel.set("")
 
         atualizar_contador_na_interface()
-        atualizar_funcao()  # Atualizar a tela principal
+        atualizar_funcao()
 
-    # Inicializa o banco de dados
     initialize_db()
 
     nome_equipamento = tk.StringVar()
@@ -133,7 +125,7 @@ def janela_ordem(janela_principal, atualizar_funcao):
     nome_responsavel = tk.StringVar()
     nome_setor = tk.StringVar()
 
-    contador = carregar_contador()  # Carrega o contador atual
+    contador = carregar_contador()
 
     ordem = tk.Toplevel()
     ordem.geometry('1280x720')
@@ -181,13 +173,12 @@ def janela_ordem(janela_principal, atualizar_funcao):
 
     ordem.bind("<F11>", alternar_tela_cheia)
     ordem.bind("<Escape>", lambda e: ordem.attributes('-fullscreen', False))
-
     ordem.attributes('-fullscreen', True)
 
     tk.Button(ordem, text='Sair', bg='#81ff1a', command=lambda: fechar_janelacadastro(ordem, janela_principal),
               font=('Helvetica', 14, 'bold'), width=13, height=1).place(x=1170, y=640)
 
-    atualizar_relogio()  # Inicia a atualização do relógio
+    atualizar_relogio()
     ordem.mainloop()
 
 
