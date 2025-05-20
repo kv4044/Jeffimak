@@ -1,9 +1,21 @@
-from peewee import *
+from peewee import SqliteDatabase, Model, CharField, IntegerField
+import os
 
-db = SqliteDatabase('motores.db')
+# Caminho para o banco de dados SQLite
+db_path = 'motores.db'
+db = SqliteDatabase(db_path)
 
 
-class Motor(Model):
+# ---------------------------
+# MODELOS DO BANCO DE DADOS
+# ---------------------------
+
+class BaseModel(Model):
+    class Meta:
+        database = db
+
+
+class Motor(BaseModel):
     nome = CharField()
     potencia = CharField()
     corrente_nominal = CharField()
@@ -12,51 +24,97 @@ class Motor(Model):
     acoplamento = CharField()
     fixacao = CharField()
 
-    class Meta:
-        database = db
+
+class Contador(BaseModel):
+    id = IntegerField(primary_key=True)
+    valor = IntegerField()
 
 
-class Contador(Model):
-    valor = IntegerField(default=1)
+class Configuracoes(BaseModel):
+    chave = CharField(unique=True)
+    valor = CharField()
 
-    class Meta:
-        database = db
 
+# ---------------------------
+# FUNÇÕES DE INICIALIZAÇÃO
+# ---------------------------
 
 def initialize_db():
     if db.is_closed():
         db.connect()
-    db.create_tables([Motor, Contador], safe=True)
-    if Contador.select().count() == 0:
-        Contador.create(valor=1)
+    db.create_tables([Motor, Contador, Configuracoes], safe=True)
+    if not Contador.select().where(Contador.id == 1).exists():
+        Contador.create(id=1, valor=1)
+    if not Configuracoes.select().where(Configuracoes.chave == "PastaPDF").exists():
+        Configuracoes.create(chave="PastaPDF", valor="")
+    db.close()
 
 
-def buscar_motor(nome_equipamento):
-    try:
-        motor = Motor.get(Motor.nome == nome_equipamento)
-        return {
-            'nome': motor.nome,
-            'potencia': motor.potencia,
-            'corrente_nominal': motor.corrente_nominal,
-            'corrente_trabalho': motor.corrente_trabalho,
-            'rolamento': motor.rolamento,
-            'acoplamento': motor.acoplamento,
-            'fixacao': motor.fixacao
-        }
-    except Motor.DoesNotExist:
-        return None
-
+# ---------------------------
+# FUNÇÕES DE CONTADOR
+# ---------------------------
 
 def carregar_contador():
     if db.is_closed():
         db.connect()
-    contador, created = Contador.get_or_create(id=1)
-    return contador.valor
+    valor = Contador.get_by_id(1).valor
+    db.close()
+    return valor
 
 
-def salvar_contador(valor):
+def salvar_contador(novo_valor):
     if db.is_closed():
         db.connect()
-    contador, created = Contador.get_or_create(id=1)
-    contador.valor = valor
+    contador = Contador.get_by_id(1)
+    contador.valor = novo_valor
     contador.save()
+    db.close()
+
+
+# ---------------------------
+# FUNÇÕES DE CONFIGURAÇÃO
+# ---------------------------
+
+def salvar_caminho_pasta(caminho):
+    if db.is_closed():
+        db.connect()
+    config, created = Configuracoes.get_or_create(chave="PastaPDF")
+    config.valor = caminho
+    config.save()
+    db.close()
+
+
+def carregar_caminho_pasta():
+    if db.is_closed():
+        db.connect()
+    try:
+        config = Configuracoes.get(Configuracoes.chave == "PastaPDF")
+        caminho = config.valor
+    except Configuracoes.DoesNotExist:
+        caminho = ""
+    db.close()
+    return caminho
+
+
+# ---------------------------
+# BUSCAR DADOS DO MOTOR
+# ---------------------------
+
+def buscar_motor(nome_equipamento):
+    if db.is_closed():
+        db.connect()
+    try:
+        motor = Motor.get(Motor.nome == nome_equipamento)
+        resultado = {
+            "nome": motor.nome,
+            "potencia": motor.potencia,
+            "corrente_nominal": motor.corrente_nominal,
+            "corrente_trabalho": motor.corrente_trabalho,
+            "rolamento": motor.rolamento,
+            "acoplamento": motor.acoplamento,
+            "fixacao": motor.fixacao
+        }
+    except Motor.DoesNotExist:
+        resultado = None
+    db.close()
+    return resultado
