@@ -1,10 +1,10 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import filedialog, messagebox
 from datetime import datetime
 import os
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from lib.models_motor import initialize_db, buscar_motor, carregar_contador, salvar_contador
+from lib.models_motor import initialize_db, buscar_motor, carregar_contador, salvar_contador, salvar_caminho_pasta, carregar_caminho_pasta
 
 
 def ler_informacoes(equipamento):
@@ -24,12 +24,17 @@ def abrir_arquivo():
     contador = carregar_contador()
     if contador > 1:
         nome_arquivo = f'ORDEM_SERVIÇO_{contador - 1}.pdf'
-        if os.path.exists(nome_arquivo):
-            os.startfile(nome_arquivo)
+        pasta = carregar_caminho_pasta()
+        if pasta:
+            caminho = os.path.join(pasta, nome_arquivo)
+            if os.path.exists(caminho):
+                os.startfile(caminho)
+            else:
+                messagebox.showerror("Erro", "Arquivo não encontrado.")
         else:
-            messagebox.showerror('Arquivo não encontrado', f'O arquivo {nome_arquivo} não existe.')
+            messagebox.showwarning("Aviso", "Nenhuma pasta de PDFs foi configurada ainda.")
     else:
-        messagebox.showwarning('Arquivo não criado', 'Nenhum arquivo de ordem de serviço foi criado ainda.')
+        messagebox.showinfo("Info", "Nenhuma ordem de serviço criada ainda.")
 
 
 def atualizar_relogio():
@@ -47,9 +52,22 @@ def janela_ordem(janela_principal, atualizar_funcao):
     global relogio, ordem, ordens_geradas, nome_equipamento, nome_problema, nome_solucao, nome_causa, nome_requisitante, nome_responsavel, nome_setor, contador
 
     janela_principal.withdraw()
+    initialize_db()
+    contador = carregar_contador()
+
+    def escolher_pasta():
+        pasta = filedialog.askdirectory()
+        if pasta:
+            salvar_caminho_pasta(pasta)
+            label_pasta.config(text=f'Pasta selecionada:\n{pasta}')
 
     def gerar_os():
         global contador
+
+        pasta = carregar_caminho_pasta()
+        if not pasta:
+            messagebox.showwarning("Aviso", "Selecione uma pasta antes de gerar a OS.")
+            return
 
         data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
 
@@ -63,9 +81,9 @@ def janela_ordem(janela_principal, atualizar_funcao):
 
         informacoes_adicionais = ler_informacoes(equipamento)
         nome_arquivo = f'ORDEM_SERVIÇO_{contador}.pdf'
+        caminho_arquivo = os.path.join(pasta, nome_arquivo)
 
-        # Gerar PDF com reportlab
-        c = canvas.Canvas(nome_arquivo, pagesize=A4)
+        c = canvas.Canvas(caminho_arquivo, pagesize=A4)
         largura, altura = A4
         y = altura - 50
 
@@ -77,23 +95,37 @@ def janela_ordem(janela_principal, atualizar_funcao):
         escrever_linha("AlfaRigor Madeiras", 30)
         escrever_linha(f"ORDEM DE SERVIÇO Nº {contador}", 20)
         escrever_linha("__________________________________________________________________", 20)
-        escrever_linha("INFORMAÇÕES DO MOTOR:", 20)
+        escrever_linha("EQUIPAMENTO:", 20)
         for linha in informacoes_adicionais.strip().split("\n"):
             escrever_linha(linha)
         escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(" ", 20)
         escrever_linha(f"Data: {data_atual}", 20)
+        escrever_linha(" ", 20)
         escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(" ", 20)
         escrever_linha(f"Nome: {nome}", 20)
+        escrever_linha(" ", 20)
         escrever_linha(f"Setor: {setor}", 20)
+        escrever_linha(" ", 20)
         escrever_linha(f"Equipamento: {equipamento}", 20)
+        escrever_linha(" ", 20)
         escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(" ", 20)
         escrever_linha(f"Problema: {problema}", 20)
+        escrever_linha(" ", 20)
         escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(" ", 20)
         escrever_linha(f"Solução: {solucao}", 20)
+        escrever_linha(" ", 20)
         escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(" ", 20)
         escrever_linha(f"Causa: {causa}", 20)
+        escrever_linha(" ", 20)
         escrever_linha("__________________________________________________________________", 20)
+        escrever_linha(" ", 20)
         escrever_linha(f"Data de execução:    /   /                     Técnico: {responsavel}", 20)
+        escrever_linha(" ", 20)
         escrever_linha("__________________________________________________________________", 20)
 
         c.save()
@@ -115,8 +147,6 @@ def janela_ordem(janela_principal, atualizar_funcao):
         atualizar_contador_na_interface()
         atualizar_funcao()
 
-    initialize_db()
-
     nome_equipamento = tk.StringVar()
     nome_problema = tk.StringVar()
     nome_solucao = tk.StringVar()
@@ -124,8 +154,6 @@ def janela_ordem(janela_principal, atualizar_funcao):
     nome_requisitante = tk.StringVar()
     nome_responsavel = tk.StringVar()
     nome_setor = tk.StringVar()
-
-    contador = carregar_contador()
 
     ordem = tk.Toplevel()
     ordem.geometry('1280x720')
@@ -167,6 +195,13 @@ def janela_ordem(janela_principal, atualizar_funcao):
     tk.Button(ordem, text="Salvar", font=('helvica', 14, 'bold'), command=gerar_os).place(x=550, y=450)
     tk.Button(ordem, text="Imprimir", font=('helvica', 14, 'bold'), command=abrir_arquivo).place(x=670, y=450)
 
+    tk.Button(ordem, text="Escolher pasta", font=('helvica', 12, 'bold'), command=escolher_pasta).place(x=40, y=530)
+    label_pasta = tk.Label(ordem, text=f"Pasta selecionada:\n{carregar_caminho_pasta() or 'Nenhuma'}", bg='grey', font=('helvica', 10))
+    label_pasta.place(x=40, y=570)
+
+    tk.Button(ordem, text='Sair', bg='#81ff1a', command=lambda: fechar_janelacadastro(ordem, janela_principal),
+              font=('Helvetica', 14, 'bold'), width=13, height=1).place(x=1170, y=640)
+
     def alternar_tela_cheia(event=None):
         estado_atual = ordem.attributes('-fullscreen')
         ordem.attributes('-fullscreen', not estado_atual)
@@ -174,9 +209,6 @@ def janela_ordem(janela_principal, atualizar_funcao):
     ordem.bind("<F11>", alternar_tela_cheia)
     ordem.bind("<Escape>", lambda e: ordem.attributes('-fullscreen', False))
     ordem.attributes('-fullscreen', True)
-
-    tk.Button(ordem, text='Sair', bg='#81ff1a', command=lambda: fechar_janelacadastro(ordem, janela_principal),
-              font=('Helvetica', 14, 'bold'), width=13, height=1).place(x=1170, y=640)
 
     atualizar_relogio()
     ordem.mainloop()
